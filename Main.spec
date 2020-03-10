@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['Main.py'],
-             pathex=['C:\\Users\\Loxoll\\Desktop\\Code-master'],
+             pathex=['C:\\Users\\paul-win7\\Desktop\\Code-master'],
              binaries=[],
              datas=[('templates\\monitor.html', 'templates'), ('templates\\warning.html', 'templates'), ('static\\bootstrap.css', 'static'), ('static\\index.css', 'static'), ('static\\JQuery.js', 'static')],
              hiddenimports=[],

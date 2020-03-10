@@ -344,18 +344,9 @@ st
 
         if s.GotoFolder(strBaseFolder):
             for i in range(len(lstDescribe)):
-                try:
-                    if _get_trace_file(lstCommand[i], lstDescribe[i]):
-                        continue
-                    else:
-                        break
-                except Exception as E:
-                    # s.ShowErr(self.__class__.__name__,
-                    #           sys._getframe().f_code.co_name,
-                    #           'Get Trace "{}" Failed for Engine "{}",\
-                    # Error:'.format(lstDescribe[i], self._host),
-                    #           E)
-                    break
+               
+                _get_trace_file(lstCommand[i], lstDescribe[i])
+         
                 time.sleep(0.1)
 
     @s.deco_OutFromFolder
