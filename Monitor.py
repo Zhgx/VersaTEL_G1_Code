@@ -31,13 +31,14 @@ lst_sansw_alias = swcfg.list_switch_alias()
 
 haapcfg = gc.EngineConfig()
 oddEngines = haapcfg._odd_engines()
+trace_level_cfg = haapcfg.trace_level()
 lst_haap_IP = oddEngines.values()
 lst_haap_alias = oddEngines.keys()
 # <<<Get Config Field>>>
 
 # <<web show table title>>
 lstDescHAAP = ('Engine', 'IP', 'Status', 'Uptime',
-               'Master', 'Cluster', 'Mirror')
+               'Master', 'Cluster', 'Mirror', 'Get Trace')
 lstDescSANSW = ('Switch', 'IP', 'Encout', 'DiscC3',
                 'LinkFail', 'LossSigle', 'LossSync', 'Total')
 lstWarning = ('Time', 'Level', 'Device', 'IP', 'Message')
@@ -89,13 +90,17 @@ tlu = Time Last Update
 
     @app.route("/", methods=['GET', 'POST'])
     def home():
-        
+        if request.args.get('trace'):
+            TRACE = request.args.get('trace')
+            haap.get_trace(TRACE,trace_level_cfg)
+        else:
+            pass
 
         if mode == 'rt':
             StatusHAAP = haap_rt_info_to_show()
-            StatusHAAP.sort(key = operator.itemgetter(0))
+            StatusHAAP.sort(key=operator.itemgetter(0))
             StatusSANSW = sansw_rt_info_to_show()
-            StatusSANSW.sort(key = operator.itemgetter(0))
+            StatusSANSW.sort(key=operator.itemgetter(0))
             tlu_haap = s.time_now_to_show()
             tlu_sansw = s.time_now_to_show()
             status_warning = 0
@@ -114,8 +119,7 @@ tlu = Time Last Update
             if engine:
                 tlu_haap = engine[0]
                 StatusHAAP = engine[1]
-                StatusHAAP.sort(key = operator.itemgetter(0))
-
+                StatusHAAP.sort(key=operator.itemgetter(0))
                 
             else:
                 tlu_haap = s.time_now_to_show()
@@ -124,7 +128,7 @@ tlu = Time Last Update
             if sansw:
                 tlu_sansw = sansw[0]
                 StatusSANSW = sansw[1]
-                StatusSANSW.sort(key = operator.itemgetter(0))
+                StatusSANSW.sort(key=operator.itemgetter(0))
             else:
                 tlu_sansw = s.time_now_to_show()
                 StatusSANSW = [0]
@@ -143,13 +147,14 @@ tlu = Time Last Update
     @app.route("/warning/")
     def warning():
         lstWarningList = db.get_unconfirm_warning()          
-        return render_template("warning.html", lstWarningList = lstWarningList,
+        return render_template("warning.html", lstWarningList=lstWarningList,
                                )
-    #FLASK_APP = myapp.py
-    #FLASK_ENV = development
+
+    # FLASK_APP = myapp.py
+    # FLASK_ENV = development
     WSGIServer(('0.0.0.0', 5000), app).serve_forever()
-    #FLASK_ENV=development
-    #app.run(debug=False, use_reloader=False, host='127.0.0.1', port=5000)
+    # FLASK_ENV=development
+    # app.run(debug=False, use_reloader=False, host='127.0.0.1', port=5000)
 
 
 def stopping_web(intSec):
@@ -189,7 +194,6 @@ def check_all_haap():
         if Info_from_DB:
             for engine in lst_haap_alias:
                 lstRT = haap_info_for_judge(Info_from_engine)[engine]
-                print(lstRT)
                 lstDB = haap_info_for_judge(Info_from_DB.info)[engine]
                 haap_judge(lstRT, lstDB, engine).all_judge()  
     finally:
@@ -208,7 +212,7 @@ def check_all_sansw():
                 strIP = dic_sum_total['IP']
                 sansw_judge(int_total_RT, int_total_DB, strIP, sw_alias)
     finally:
-        db.switch_insert(datetime.datetime.now(),dicAll[0], dicAll[1], dicAll[2])
+        db.switch_insert(datetime.datetime.now(), dicAll[0], dicAll[1], dicAll[2])
 
 
 def warning_check():
@@ -220,6 +224,7 @@ def warning_check():
 
 # check status interval
 
+
 class haap_judge(object):
     """docstring for haap_judge"""
 
@@ -230,7 +235,6 @@ class haap_judge(object):
         self.statusDB = statusDB
         self.strTimeNow = s.time_now_to_show()
         self.lstWarningToSend = []
-
 
     def judge_AH(self, AHstatus_rt, AHstatus_db):
         str_engine_AH = 'Engine AH'
@@ -246,7 +250,9 @@ class haap_judge(object):
 
     def judge_reboot(self, uptime_second_rt, uptime_second_db):
         str_engine_restart = 'Engine reboot %d secends ago'
-        if uptime_second_rt < uptime_second_db:
+        if uptime_second_rt == None:
+            return True
+        elif uptime_second_rt < uptime_second_db:
             db.insert_warning(self.strTimeNow, self.host,
                               'engine', 2, str_engine_restart % (uptime_second_rt), 0)
             self.lstWarningToSend.append([self.strTimeNow, self.host,
@@ -263,7 +269,6 @@ class haap_judge(object):
 
     def judge_Mirror(self, MirrorStatus_rt, MirrorStatus_db):
         str_engine_mirror = 'Engine mirror not ok'
-        print(MirrorStatus_rt)
         if MirrorStatus_rt != 'OK' and MirrorStatus_rt != 'No Mirror':
             if MirrorStatus_rt != MirrorStatus_db:
                 db.insert_warning(self.strTimeNow, self.host,
@@ -283,7 +288,6 @@ class haap_judge(object):
         # finally:
         #     if self.lstWarningToSend:
         #         se.send_warnmail(self.lstWarningToSend)
-
         
         if self.statusDB:
             if self.judge_AH(self.statusRT[1], self.statusDB[1]):
@@ -297,7 +301,6 @@ class haap_judge(object):
             se.send_warnmail(self.lstWarningToSend)
 
 
-
 def sansw_judge(total_RT, total_DB, sansw_IP, sansw_Alias):
     strTimeNow = s.time_now_to_show()
     if (total_DB != None) and (total_RT != None):
@@ -305,7 +308,7 @@ def sansw_judge(total_RT, total_DB, sansw_IP, sansw_Alias):
         intWarninglevel = s.is_Warning(intErrorIncrease, tuplThresholdTotal)
         if intWarninglevel:
             msg = warning_message_sansw(intWarninglevel)
-            db.insert_warning(strTimeNow, sansw_IP, 'switch', 
+            db.insert_warning(strTimeNow, sansw_IP, 'switch',
                               intWarninglevel, msg, 0)
             se.send_warnmail([[strTimeNow, sansw_IP,
                                sansw_Alias, intWarninglevel, msg]])
@@ -351,7 +354,7 @@ def sansw_info_to_show():
             ip = switch_total[sansw_alias]["IP"]
             PE_sum = switch_total[sansw_alias]["PE_Sum"]
             if PE_sum == None:
-                PE_sum = ['--','--','--','--','--']
+                PE_sum = ['--', '--', '--', '--', '--']
             PE_total = switch_total[sansw_alias]["PE_Total"]
             if PE_total == None:
                 PE_total = '--'
@@ -390,6 +393,7 @@ def get_switch_total_db(list_switch_alias):
         db_total = dicALL[list_switch_alias]["PE_Total"]
         return db_total
 
+
 def sansw_rt_info_to_show():
     """
     @note: SANSW要展示的即时内容（status）
@@ -425,6 +429,7 @@ def haap_rt_info_to_show():
             info_status.append(dicALL[engine_alias]['level'])
             lstHAAPToShow.append(info_status)
         return  lstHAAPToShow
+
 
 if __name__ == '__main__':
     pass
