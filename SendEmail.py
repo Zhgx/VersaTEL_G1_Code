@@ -32,18 +32,29 @@ def send_email(content):
     try:
         if email_ssl == 'yes':
             send_smtp = smtplib.SMTP_SSL(email_host, email_host_port_ssl)
-            send_smtp.login(email_sender, email_password)
-            send_smtp.sendmail(email_sender, email_receiver_list, msg.as_string())
-            send_smtp.close()
-        else:
-            send_smtp = smtplib.SMTP()
             send_smtp.connect(email_host)
-            send_smtp.login(email_sender, email_password)
-            send_smtp.sendmail(email_sender, email_receiver_list, msg.as_string())
-            send_smtp.close()
+        else:
+            send_smtp = smtplib.SMTP(email_host, email_host_port)
+            send_smtp.connect(email_host)
     except:
-        print ("Send mail failed!")
+        print("Failed to access smtp server!")
+        return False
 
+    try:
+        send_smtp.login(email_sender, email_password)
+    except:
+        print("ID or Password is wrong")
+        return False
+
+    try:
+        send_smtp.sendmail(email_sender, email_receiver_list, msg.as_string())
+    except:
+        print("Send Fail, Please check recipient")
+        return False
+
+    send_smtp.close()
+    print("Send success!")
+    return True
 
 
 def send_warnmail(warninfo_email):
