@@ -91,14 +91,17 @@ def monitor_db_4_thread():
     except KeyboardInterrupt:
         stopping_web(3)
 
-
 def job():
     se.send_live()
     print("working")
+    
+
+def job_task():
+    threading.Thread(target=job).start()
 
     
 def Monitoring_heart():
-    schedule.every().day.at(interval_time_check).do(job)
+    schedule.every().day.at(interval_time_check).do(job_task)
     while True:
         schedule.run_pending()
         time.sleep(1)
@@ -178,8 +181,6 @@ tlu = Time Last Update
         if request.args.get('ey'):
             ey = request.args.get('ey')
             se.send_test()
-            messs = "成功"
-            return messs   
         else:
             pass
     
