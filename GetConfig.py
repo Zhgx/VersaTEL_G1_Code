@@ -224,12 +224,6 @@ class Setting(object):
     def interval_warning_check(self):
         return self.cfg.getint('Interval', 'warning_check')
     
-    def interval_heart_check(self):
-        return self.cfg.getint('Interval', 'heart_check')
-    
-    def interval_time_check(self):
-        return self.cfg.get('Interval', 'heart_time')
-
     def folder_collection(self):
         return collection
 
@@ -259,6 +253,27 @@ class Setting(object):
         for i in TraceRegular2:
             oddRegularTrace[i[0]] = i[1]
         return oddRegularTrace
+
+
+class Cycle(object):
+    """docstring for Cycle"""
+
+    def __init__(self):
+        self.cfg = read_config_file()
+
+
+    def cron_cycle(self):
+        return self.cfg.getint('Cycle', 'cycle')
+
+    def cron_day(self):
+        return self.cfg.getint('Cycle', 'day')
+    
+    def cron_hour(self):
+        return self.cfg.getint('Cycle', 'hour')
+    
+    def cron_minutes(self):
+        return self.cfg.getint('Cycle', 'minutes')
+
 
 
 class General(object):

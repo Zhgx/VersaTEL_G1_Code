@@ -26,9 +26,16 @@ interval_web_refresh = setting.interval_web_refresh()
 interval_haap_update = setting.interval_haap_update()
 interval_sansw_update = setting.interval_sansw_update()
 interval_warning_check = setting.interval_warning_check()
-interval_heart_check = setting.interval_heart_check()
-print(interval_heart_check)
-interval_time_check = setting.interval_time_check()
+
+cycle_msg = gc.Cycle()
+cron_cycle = cycle_msg.cron_cycle()
+cron_day = cycle_msg.cron_day()
+cron_hour = cycle_msg.cron_hour()
+cron_minutes = cycle_msg.cron_minutes()
+
+
+
+
 
 swcfg = gc.SwitchConfig()
 tuplThresholdTotal = swcfg.threshold_total()
@@ -66,7 +73,7 @@ def monitor_db_4_thread():
     t2 = Thread(target=haap_interval_check, args=(interval_haap_update,))
     t3 = Thread(target=sansw_interval_check, args=(interval_sansw_update,))
     t4 = Thread(target=warning_interval_check, args=(interval_warning_check,))
-    t5 = Thread(target=Monitoring_heart_check, args=(interval_heart_check,))
+    t5 = Thread(target=Monitoring_heart_check, args=(cron_cycle,cron_day,cron_hour,cron_minutes))
     t1.setDaemon(True)
     t2.setDaemon(True)
     t3.setDaemon(True)
@@ -90,21 +97,6 @@ def monitor_db_4_thread():
             pass
     except KeyboardInterrupt:
         stopping_web(3)
-
-def job():
-    se.send_live()
-    print("working")
-    
-
-def job_task():
-    threading.Thread(target=job).start()
-
-    
-def Monitoring_heart():
-    schedule.every().day.at(interval_time_check).do(job_task)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
 
 
 def start_web(mode):
@@ -221,9 +213,9 @@ def warning_interval_check(intInterval):
     t.stt()
 
 
-def Monitoring_heart_check(intInterval):
+def Monitoring_heart_check(args):
     t = s.Timing()
-    t.add_interval(Monitoring_heart, intInterval)
+    t.add_cycle(se.send_live, args)
     t.stt()
 
 
