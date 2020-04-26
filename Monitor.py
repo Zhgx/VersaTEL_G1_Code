@@ -14,7 +14,6 @@ import Sundry as s
 import SendEmail as se
 import DB as db
 import GetConfig as gc
-from findertools import sleep
 try:
     import configparser as cp
 except Exception:
