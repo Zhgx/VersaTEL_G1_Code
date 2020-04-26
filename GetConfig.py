@@ -263,7 +263,7 @@ class Cycle(object):
 
 
     def cron_cycle(self):
-        return self.cfg.getint('Cycle', 'cycle')
+        return self.cfg.get('Cycle', 'cycle')
 
     def cron_day(self):
         return self.cfg.getint('Cycle', 'day')

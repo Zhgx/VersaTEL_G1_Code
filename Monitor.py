@@ -31,6 +31,7 @@ cron_cycle = cycle_msg.cron_cycle()
 cron_day = cycle_msg.cron_day()
 cron_hour = cycle_msg.cron_hour()
 cron_minutes = cycle_msg.cron_minutes()
+cycle_msg_args = [cron_cycle,cron_day,cron_hour,cron_minutes]
 
 
 
@@ -72,7 +73,7 @@ def monitor_db_4_thread():
     t2 = Thread(target=haap_interval_check, args=(interval_haap_update,))
     t3 = Thread(target=sansw_interval_check, args=(interval_sansw_update,))
     t4 = Thread(target=warning_interval_check, args=(interval_warning_check,))
-    t5 = Thread(target=Monitoring_heart_check, args=(cron_cycle,cron_day,cron_hour,cron_minutes))
+    t5 = Thread(target=Monitoring_heart_check, args=(cycle_msg_args,))
     t1.setDaemon(True)
     t2.setDaemon(True)
     t3.setDaemon(True)
@@ -212,9 +213,9 @@ def warning_interval_check(intInterval):
     t.stt()
 
 
-def Monitoring_heart_check(args):
+def Monitoring_heart_check(cycle_msg_args):
     t = s.Timing()
-    t.add_cycle(se.send_live, args)
+    t.add_cycle(se.send_live, cycle_msg_args)
     t.stt()
 
 
