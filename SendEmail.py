@@ -34,8 +34,11 @@ def send_email(content):
             send_smtp = smtplib.SMTP_SSL(email_host, email_host_port_ssl)
             send_smtp.connect(email_host)
         else:
+            print("2111112")
             send_smtp = smtplib.SMTP(email_host, email_host_port)
+            print("222222")
             send_smtp.connect(email_host)
+            print("2223333322")
     except:
         print("Failed to access smtp server!")
         return False
