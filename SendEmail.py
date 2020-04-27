@@ -34,8 +34,10 @@ def send_email(content):
             send_smtp = smtplib.SMTP_SSL(email_host, email_host_port_ssl)
             send_smtp.connect(email_host)
         else:
-            send_smtp = smtplib.SMTP(email_host, email_host_port)
-            send_smtp.connect(email_host)
+            send_smtp = smtplib.SMTP()
+            send_smtp.connect(email_host, email_host_port)
+            send_smtp.ehlo()
+            send_smtp.starttls()
     except:
         print("Failed to access smtp server!")
         return False
