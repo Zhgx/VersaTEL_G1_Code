@@ -173,6 +173,8 @@ tlu = Time Last Update
         if request.args.get('ey'):
             ey = request.args.get('ey')
             se.send_test()
+            meg = "success"
+            return meg
         else:
             pass
     
