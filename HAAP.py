@@ -146,22 +146,24 @@ def periodically_check(ip):
         lstPCCommand, strPCFolder, PCFile_name)
 
 
-def status_for_judging_realtime(ip):
-    objEngine = Status(ip, telnet_port, passwd, FTP_port)
-    lstStatus = objEngine.over_all_and_warning()
-    intUpTimeSec = objEngine.uptime_second()
-    return lstStatus, intUpTimeSec
-
-
-def list_status_for_realtime_show():
-    '''
-[['1.1.1.1',0,'2d','M',0,0,0],['1.1.1.1',0,'2d','M',0,1,2]]
-    '''
-    lstStatus = []
-    for i in list_engines_alias:
-        objEngine = Status(list_engines_IP[i], telnet_port, passwd, FTP_port)
-        lstStatusWarning = list(objEngine.over_all_and_warning())
-    return lstStatus
+# def status_for_judging_realtime(ip):
+#     objEngine = Status(ip, telnet_port, passwd, FTP_port)
+# #     lstStatus = objEngine.over_all_and_warning()
+#     lstStatus = objEngine.over_all()
+#     intUpTimeSec = objEngine.uptime_second()
+#     return lstStatus, intUpTimeSec
+# 
+# 
+# def list_status_for_realtime_show():
+#     '''
+# [['1.1.1.1',0,'2d','M',0,0,0],['1.1.1.1',0,'2d','M',0,1,2]]
+#     '''
+#     lstStatus = []
+#     for i in list_engines_alias:
+#         objEngine = Status(list_engines_IP[i], telnet_port, passwd, FTP_port)
+# #         lstStatusWarning = list(objEngine.over_all_and_warning())
+#         lstStatusWarning = list(objEngine.over_all())
+#     return lstStatus
 
 
 def origin(haap_alias, objEngine):

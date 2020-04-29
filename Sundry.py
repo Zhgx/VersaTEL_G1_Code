@@ -185,7 +185,6 @@ class Timing(object):
         day_meg = args[1]
         hour_meg = args[2]
         minutes_meg = args[3]
-        print(cycle_meg,day_meg,hour_meg,minutes_meg)
         if cycle_meg == 'week':
             self.scdl.add_job(job, 'cron',day = day_meg,hour = hour_meg,minute = minutes_meg)
         elif cycle_meg == 'day':
