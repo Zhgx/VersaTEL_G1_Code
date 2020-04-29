@@ -105,10 +105,9 @@ def send_warnmail(warninfo_email):
 
 
 def send_test():
-    text = "paul test"
+    text = "This is a HA-AP test email!"
     send_email(text)
 
 def send_live():
     text = "I'm still alive"
     send_email(text)
-
