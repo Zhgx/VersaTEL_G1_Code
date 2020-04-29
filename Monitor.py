@@ -223,9 +223,7 @@ def check_all_haap():
         Info_from_DB = db.haap_last_record()
         if Info_from_DB:
             for engine in lst_haap_alias:
-                print("rt")
                 lstRT = haap_info_for_judge(Info_from_engine)[engine]
-                print("db")
                 lstDB = haap_info_for_judge(Info_from_DB.info)[engine]
                 haap_judge(lstRT, lstDB, engine).all_judge()  
     finally:
@@ -285,6 +283,10 @@ class haap_judge(object):
         if uptime_second_rt == None:
             return True
         elif uptime_second_rt < uptime_second_db:
+            data = open(r"uptime.txt","a")
+            txt = "uptime_second:" + str(s.time_now_to_show()) + " "+ str(uptime_second_rt) + " " + str(uptime_second_db)
+            data.write(txt+'\n')
+            data.close()
             db.insert_warning(self.strTimeNow, self.host,
                               'engine', 2, str_engine_restart % (uptime_second_rt), 0)
             self.lstWarningToSend.append([self.strTimeNow, self.host,
@@ -411,7 +413,6 @@ def haap_info_for_judge(lstInfo):
             new_list_status_judge = list_status[:]
             list_status_judge = [new_list_status_judge[i] for i in [0, 1, 2, 4, 5]]
             list_status_judge[2] = lstInfo[haap]['up_sec']
-            print("222:",list_status_judge[2])
             dicInfo[haap] = list_status_judge
         return dicInfo
 
