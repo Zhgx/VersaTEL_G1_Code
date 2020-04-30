@@ -33,10 +33,6 @@ cron_hour = cycle_msg.cron_hour()
 cron_minutes = cycle_msg.cron_minutes()
 cycle_msg_args = [cron_cycle,cron_day,cron_hour,cron_minutes]
 
-
-
-
-
 swcfg = gc.SwitchConfig()
 tuplThresholdTotal = swcfg.threshold_total()
 lst_sansw_IP = swcfg.list_switch_IP()
@@ -173,6 +169,8 @@ tlu = Time Last Update
         if request.args.get('ey'):
             ey = request.args.get('ey')
             se.send_test()
+            meg = "success"
+            return meg
         else:
             pass
     
@@ -285,6 +283,10 @@ class haap_judge(object):
         if uptime_second_rt == None:
             return True
         elif uptime_second_rt < uptime_second_db:
+            data = open(r"uptime.txt","a")
+            txt = "uptime_second:" + str(s.time_now_to_show()) + " "+ str(uptime_second_rt) + " " + str(uptime_second_db)
+            data.write(txt+'\n')
+            data.close()
             db.insert_warning(self.strTimeNow, self.host,
                               'engine', 2, str_engine_restart % (uptime_second_rt), 0)
             self.lstWarningToSend.append([self.strTimeNow, self.host,
