@@ -282,7 +282,7 @@ class haap_judge(object):
         str_engine_restart = 'Engine reboot %d secends ago'
         if uptime_second_rt == None:
             return True
-        elif uptime_second_rt > uptime_second_db:
+        elif uptime_second_rt < uptime_second_db:
             str_to_write = "%s:uptime_rt: %d uptime_db:%d"%(s.time_now_to_show(),uptime_second_rt,uptime_second_db)
             with open('uptime.txt',mode='a+') as f:
                 f.write(str_to_write+'\n')

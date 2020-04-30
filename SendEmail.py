@@ -10,34 +10,36 @@ except Exception:
 
 #read config
 emailcfg = gc.EmailConfig()
-email_host_port = emailcfg.email_host_port()
 email_enable = emailcfg.email_enable()
 email_host = emailcfg.email_host()
-email_password = emailcfg.email_password()
+email_port = emailcfg.email_port()
 email_sender = emailcfg.email_sender()
+email_password = emailcfg.email_password()
 email_receiver = emailcfg.email_receiver()
 email_receiver_list = email_receiver.split(',')
-email_sub = emailcfg.email_sub()
-email_ssl = emailcfg.email_ssl()
-email_host_port_ssl = emailcfg.email_host_port_ssl()
+email_encrypt = emailcfg.email_encrypt()
 
 
-def send_email(content):
+def send_email(title, content):
     msg = MIMEMultipart()
-    msg['Subject'] = email_sub
+    msg['Subject'] = title
     msg['From'] = email_sender
     msg['To'] = ",".join(email_receiver_list)
     context = MIMEText(content, _subtype='html', _charset='utf-8')
     msg.attach(context)
     try:
-        if email_ssl == 'yes':
-            send_smtp = smtplib.SMTP_SSL(email_host, email_host_port_ssl)
+        if email_encrypt == 'ssl':
+            send_smtp = smtplib.SMTP_SSL(email_host, 465)
             send_smtp.connect(email_host)
         else:
             send_smtp = smtplib.SMTP()
-            send_smtp.connect(email_host, email_host_port)
-            send_smtp.ehlo()
-            send_smtp.starttls()
+            if email_encrypt == 'tls':
+                send_smtp.connect(email_host, 587)
+                send_smtp.ehlo()
+                send_smtp.starttls()
+            else:
+                send_smtp.connect(email_host, email_port)
+                send_smtp.ehlo()
     except:
         print("Failed to access smtp server!")
         return False
@@ -72,7 +74,7 @@ def send_warnmail(warninfo_email):
                     <td>""" + str(lstMsg[4]) + """</td>
                 </tr>"""
         data_table = data_table + line_table
-    html = """\
+    content = """\
         <html xmlns="http://www.w3.org/1999/xhtml">
         <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -100,13 +102,22 @@ def send_warnmail(warninfo_email):
           </div>
         </body>
         </html> """
-    send_email(html)
+    title = "ClusterIO System Status Alert"
+    send_email(title, content)
 
 
 def send_test():
-    text = "This is a HA-AP test email!"
-    send_email(text)
+    title = "This is a HA-AP test email"
+    content = "Test"
+    send_email(title, content)
 
 def send_live():
-    text = "I'm still alive"
-    send_email(text)
+    title = "HA-AP Timing alarm clock"
+    content = "I'm still alive"
+    send_email(title, content)
+
+
+if __name__ == '__main__':
+    send_test()
+    # a = [['2020-04-29 16:36:42', '10.203.1.4', 'engine0', 2, 'Engine reboot 6674 secends ago']]
+    # send_warnmail(a)
