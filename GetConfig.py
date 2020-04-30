@@ -176,9 +176,8 @@ class EmailConfig(object):
     def email_host(self):
         return str(self.cfg.get('EmailSetting', 'host'))
 
-    # port of mail server 
-    def email_host_port(self):
-        return self.cfg.getint('EmailSetting', 'host_port')
+    def email_port(self):
+        return self.cfg.getint('EmailSetting', 'port')
 
     def email_password(self):
         return str(self.cfg.get('EmailSetting', 'password'))
@@ -189,18 +188,12 @@ class EmailConfig(object):
     def email_receiver(self):
         return str(self.cfg.get('EmailSetting', 'receiver'))
 
-    def email_sub(self):
-        return str(self.cfg.get('EmailSetting', 'email_sub'))
-
     # Whether to Turn off Mail Function
     def email_enable(self):
         return self.cfg.get('EmailSetting', 'enable')
 
-    def email_ssl(self):
-        return self.cfg.get('EmailSetting', 'ssl')
-
-    def email_host_port_ssl(self):
-        return self.cfg.get('EmailSetting', 'host_port_ssl')
+    def email_encrypt(self):
+        return self.cfg.get('EmailSetting', 'encrypt')
 
 
 class Setting(object):
