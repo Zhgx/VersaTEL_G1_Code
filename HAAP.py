@@ -145,7 +145,6 @@ def periodically_check(ip):
     Action(ip, telnet_port, passwd, FTP_port).periodic_check(
         lstPCCommand, strPCFolder, PCFile_name)
 
-
 # def status_for_judging_realtime(ip):
 #     objEngine = Status(ip, telnet_port, passwd, FTP_port)
 # #     lstStatus = objEngine.over_all_and_warning()
@@ -173,7 +172,6 @@ def origin(haap_alias, objEngine):
     else:
         pass
     return dicOrigin
-
 
 
 def info(haap_alias, objEngine):
@@ -480,6 +478,9 @@ class Uptime(object):
                 intSecond += s
             return intSecond
         else:
+            str_to_write = "%s:we will get a 0" % s.time_now_to_show()
+            with open('get0.txt', mode='a+') as f:
+                f.write(str_to_write + '\n')
             return 0
 
     def uptime_to_show(self):
@@ -513,7 +514,7 @@ class Status(Action):
             self.objUpTime = Uptime(self.dictInfo['vpd'])
         else:
             self.objUpTime = None
-        #print ('dictinfo:',self.dictInfo)
+        # print ('dictinfo:',self.dictInfo)
 
     @s.deco_Exception
     def _get_info_to_dict(self):
@@ -659,7 +660,7 @@ class Status(Action):
         else:
             lstStatus[4] = 'OK'
 
-        #mirror_status = lstStatus[5]
+        # mirror_status = lstStatus[5]
         if lstStatus[5] == '--':
             pass
         elif lstStatus[5] == 1:
@@ -687,5 +688,5 @@ class Status(Action):
 
 if __name__ == '__main__':
    # Paul = Status('10.10.88.94',23,'abc',21,5)
-    #print(Paul.dictInfo())
+    # print(Paul.dictInfo())
     pass

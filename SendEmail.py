@@ -38,7 +38,6 @@ def send_email(content):
             send_smtp.connect(email_host, email_host_port)
             send_smtp.ehlo()
             send_smtp.starttls()
-            print("2222")
     except:
         print("Failed to access smtp server!")
         return False
