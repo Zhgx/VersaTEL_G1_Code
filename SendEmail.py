@@ -20,13 +20,12 @@ email_receiver_list = email_receiver.split(',')
 email_encrypt = emailcfg.email_encrypt()
 
 def email_switch(func):
-    def send():
+    def send(*args):
         if email_enable == 'yes':
-            return func()
+            return func(*args)
         else:
             print("The Email swich is off.")
     return send
-
 
 def send_email(title, content):
     msg = MIMEMultipart()
@@ -81,31 +80,33 @@ def send_warnmail(warninfo_email):
                 </tr>"""
         data_table = data_table + line_table
     content = """\
-        <html xmlns="http://www.w3.org/1999/xhtml">
+        <html>
         <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>用户未确认预警信息</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <title>用户未确认预警信息</title>
+        </head>
         <body>
-        <div id="container">
-          <p><strong>用户未确认预警信息</strong></p>
-          <div id="content">
-           <table width="500" border="2" bordercolor="red" cellspacing="2">
-           <div class="container">
-                <div class="row">
-                <div class="container">
-                  <tr>
-                    <th>Time</th>
-                    <th>IP</th>
-                    <th>Device</th>
-                    <th>Level</th>
-                    <th>Message</th>
-                  </tr>
-                  """ + data_table + """
-                  </div>
-                </div>  
-                </div>     
-            </table>
-          </div>
+            <div id="container">
+            <p><strong>用户未确认预警信息</strong></p>
+            </div>
+            <div id="content">
+                <table width="500" border="2" bordercolor="red" cellspacing="2">
+                    <div class="container">
+                        <div class="row">
+                        <div class="container">
+                            <tr>
+                                <th>Time</th>
+                                <th>IP</th>
+                                <th>Device</th>
+                                <th>Level</th>
+                                <th>Message</th>
+                            </tr>
+                            """ + data_table + """
+                        </div>
+                        </div>  
+                    </div>     
+                </table>
+            </div>
         </body>
         </html> """
     title = "ClusterIO System Status Alert"
@@ -128,3 +129,4 @@ if __name__ == '__main__':
     send_test()
     # a = [['2020-04-29 16:36:42', '10.203.1.4', 'engine0', 2, 'Engine reboot 6674 secends ago']]
     # send_warnmail(a)
+
