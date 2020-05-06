@@ -70,8 +70,6 @@ def send_email(title, content):
 
 @email_switch
 def send_warnmail(warninfo_email):
-    if email_enable == 'no':
-        return
     data_table = ""
     for lstMsg in warninfo_email:
         line_table = """<tr>
