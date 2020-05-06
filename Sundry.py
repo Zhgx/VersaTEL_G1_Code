@@ -179,7 +179,17 @@ class Timing(object):
     def add_interval(self, job, intSec):
         trigger = IntervalTrigger(seconds=intSec)
         self.scdl.add_job(job, trigger)
-
+    
+    def add_cycle(self,job,args):
+        cycle_meg = args[0]
+        day_meg = args[1]
+        hour_meg = args[2]
+        minutes_meg = args[3]
+        if cycle_meg == 'week':
+            self.scdl.add_job(job, 'cron',day = day_meg,hour = hour_meg,minute = minutes_meg)
+        elif cycle_meg == 'day':
+            self.scdl.add_job(job, 'cron',hour = hour_meg,minute = minutes_meg)
+    
     def add_once(self, job, rdate):
         try:
             self.scdl.add_job(job, 'date', run_date=rdate, max_instances=6)

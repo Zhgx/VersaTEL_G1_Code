@@ -1,5 +1,7 @@
 # coding:utf-8
 from __future__ import print_function
+import schedule
+import time
 from flask import Flask, render_template, request
 from gevent.pywsgi import WSGIServer
 from threading import Thread
@@ -23,6 +25,13 @@ interval_web_refresh = setting.interval_web_refresh()
 interval_haap_update = setting.interval_haap_update()
 interval_sansw_update = setting.interval_sansw_update()
 interval_warning_check = setting.interval_warning_check()
+
+cycle_msg = gc.Cycle()
+cron_cycle = cycle_msg.cron_cycle()
+cron_day = cycle_msg.cron_day()
+cron_hour = cycle_msg.cron_hour()
+cron_minutes = cycle_msg.cron_minutes()
+cycle_msg_args = [cron_cycle,cron_day,cron_hour,cron_minutes]
 
 swcfg = gc.SwitchConfig()
 tuplThresholdTotal = swcfg.threshold_total()
@@ -60,15 +69,20 @@ def monitor_db_4_thread():
     t2 = Thread(target=haap_interval_check, args=(interval_haap_update,))
     t3 = Thread(target=sansw_interval_check, args=(interval_sansw_update,))
     t4 = Thread(target=warning_interval_check, args=(interval_warning_check,))
+    t5 = Thread(target=Monitoring_heart_check, args=(cycle_msg_args,))
     t1.setDaemon(True)
     t2.setDaemon(True)
     t3.setDaemon(True)
     t4.setDaemon(True)
+    t5.setDaemon(True)
     t1.start()
     t2.start()
     t3.start()
     t4.start()
+    t5.start()
     try:
+        while t5.isAlive():
+            pass
         while t4.isAlive():
             pass
         while t3.isAlive():
@@ -92,7 +106,7 @@ tlu = Time Last Update
     def home():
         if request.args.get('trace'):
             TRACE = request.args.get('trace')
-            haap.get_trace(TRACE,trace_level_cfg)
+            haap.get_trace(TRACE, trace_level_cfg)
         else:
             pass
 
@@ -149,7 +163,17 @@ tlu = Time Last Update
         lstWarningList = db.get_unconfirm_warning()          
         return render_template("warning.html", lstWarningList=lstWarningList,
                                )
-
+        
+    @app.route("/send_email",methods=['GET', 'POST'])
+    def send_emails():
+        if request.args.get('ey'):
+            ey = request.args.get('ey')
+            se.send_test()
+            meg = "success"
+            return meg
+        else:
+            pass
+    
     # FLASK_APP = myapp.py
     # FLASK_ENV = development
     WSGIServer(('0.0.0.0', 5000), app).serve_forever()
@@ -184,6 +208,12 @@ def sansw_interval_check(intInterval):
 def warning_interval_check(intInterval):
     t = s.Timing()
     t.add_interval(warning_check, intInterval)
+    t.stt()
+
+
+def Monitoring_heart_check(cycle_msg_args):
+    t = s.Timing()
+    t.add_cycle(se.send_live, cycle_msg_args)
     t.stt()
 
 
@@ -253,6 +283,9 @@ class haap_judge(object):
         if uptime_second_rt == None:
             return True
         elif uptime_second_rt < uptime_second_db:
+            str_to_write = "%s:uptime_rt: %d uptime_db:%d"%(s.time_now_to_show(),uptime_second_rt,uptime_second_db)
+            with open('uptime.txt',mode='a+') as f:
+                f.write(str_to_write+'\n')
             db.insert_warning(self.strTimeNow, self.host,
                               'engine', 2, str_engine_restart % (uptime_second_rt), 0)
             self.lstWarningToSend.append([self.strTimeNow, self.host,
