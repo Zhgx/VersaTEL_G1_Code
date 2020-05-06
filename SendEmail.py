@@ -19,6 +19,14 @@ email_receiver = emailcfg.email_receiver()
 email_receiver_list = email_receiver.split(',')
 email_encrypt = emailcfg.email_encrypt()
 
+def email_switch(func):
+    def send():
+        if email_enable == 'yes':
+            return func()
+        else:
+            print("The Email swich is off.")
+    return send
+
 
 def send_email(title, content):
     msg = MIMEMultipart()
@@ -60,7 +68,7 @@ def send_email(title, content):
     print("Send success!")
     return True
 
-
+@email_switch
 def send_warnmail(warninfo_email):
     if email_enable == 'no':
         return
@@ -105,12 +113,13 @@ def send_warnmail(warninfo_email):
     title = "ClusterIO System Status Alert"
     send_email(title, content)
 
-
+@email_switch
 def send_test():
     title = "This is a HA-AP test email"
     content = "Test"
     send_email(title, content)
 
+@email_switch
 def send_live():
     title = "HA-AP Timing alarm clock"
     content = "I'm still alive"
