@@ -14,7 +14,6 @@ import Sundry as s
 import SendEmail as se
 import DB as db
 import GetConfig as gc
-from findertools import sleep
 try:
     import configparser as cp
 except Exception:
@@ -26,9 +25,13 @@ interval_web_refresh = setting.interval_web_refresh()
 interval_haap_update = setting.interval_haap_update()
 interval_sansw_update = setting.interval_sansw_update()
 interval_warning_check = setting.interval_warning_check()
-interval_heart_check = setting.interval_heart_check()
-print(interval_heart_check)
-interval_time_check = setting.interval_time_check()
+
+cycle_msg = gc.Cycle()
+cron_cycle = cycle_msg.cron_cycle()
+cron_day = cycle_msg.cron_day()
+cron_hour = cycle_msg.cron_hour()
+cron_minutes = cycle_msg.cron_minutes()
+cycle_msg_args = [cron_cycle,cron_day,cron_hour,cron_minutes]
 
 swcfg = gc.SwitchConfig()
 tuplThresholdTotal = swcfg.threshold_total()
@@ -66,7 +69,7 @@ def monitor_db_4_thread():
     t2 = Thread(target=haap_interval_check, args=(interval_haap_update,))
     t3 = Thread(target=sansw_interval_check, args=(interval_sansw_update,))
     t4 = Thread(target=warning_interval_check, args=(interval_warning_check,))
-    t5 = Thread(target=Monitoring_heart_check, args=(interval_heart_check,))
+    t5 = Thread(target=Monitoring_heart_check, args=(cycle_msg_args,))
     t1.setDaemon(True)
     t2.setDaemon(True)
     t3.setDaemon(True)
@@ -90,18 +93,6 @@ def monitor_db_4_thread():
             pass
     except KeyboardInterrupt:
         stopping_web(3)
-
-
-def job():
-    se.send_live()
-    print("working")
-
-    
-def Monitoring_heart():
-    schedule.every().day.at(interval_time_check).do(job)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
 
 
 def start_web(mode):
@@ -178,8 +169,8 @@ tlu = Time Last Update
         if request.args.get('ey'):
             ey = request.args.get('ey')
             se.send_test()
-            messs = "成功"
-            return messs   
+            meg = "success"
+            return meg
         else:
             pass
     
@@ -220,9 +211,9 @@ def warning_interval_check(intInterval):
     t.stt()
 
 
-def Monitoring_heart_check(intInterval):
+def Monitoring_heart_check(cycle_msg_args):
     t = s.Timing()
-    t.add_interval(Monitoring_heart, intInterval)
+    t.add_cycle(se.send_live, cycle_msg_args)
     t.stt()
 
 
@@ -292,6 +283,9 @@ class haap_judge(object):
         if uptime_second_rt == None:
             return True
         elif uptime_second_rt < uptime_second_db:
+            str_to_write = "%s:uptime_rt: %d uptime_db:%d"%(s.time_now_to_show(),uptime_second_rt,uptime_second_db)
+            with open('uptime.txt',mode='a+') as f:
+                f.write(str_to_write+'\n')
             db.insert_warning(self.strTimeNow, self.host,
                               'engine', 2, str_engine_restart % (uptime_second_rt), 0)
             self.lstWarningToSend.append([self.strTimeNow, self.host,
