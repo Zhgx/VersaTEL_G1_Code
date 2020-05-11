@@ -468,6 +468,7 @@ class Uptime(object):
             d = uptime_list[0]
             h = uptime_list[1]
             m = uptime_list[2]
+            #st : second uptime 
             st = uptime_list[3]
             if d:
                 intSecond += d * 24 * 3600
