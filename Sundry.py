@@ -6,6 +6,7 @@ import datetime
 import re
 
 from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
 from collections import OrderedDict as odd
@@ -79,6 +80,7 @@ def is_Warning(intValue, data):
         else:
             return 0
 
+
 def is_trace_level(num):
     if num in (1, 2, 3):
         return True
@@ -102,6 +104,7 @@ def is_file(strFileName):
         return True
     else:
         return False
+
     
 def is_folder(strDirName):
     if os.path.isdir(strDirName):
@@ -132,7 +135,7 @@ def ShowErr(*argvs):
 |    Error message: {:<55}|
 |        {:<66}|
 ----------------------------------------------------------------------------\
-'''.format(argvs[2], err_msg = (argvs[3] if argvs[3] else '' ))))
+'''.format(argvs[2], err_msg=(argvs[3] if argvs[3] else ''))))
     elif error_level == 2:
         pass
     elif error_level == 3:
@@ -145,7 +148,7 @@ def ShowErr(*argvs):
 |        {:<66}|
 ----------------------------------------------------------------------------\
 
-'''.format(argvs[0], argvs[1], argvs[2], err_msg = (argvs[3] if argvs[3] else '' ))))
+'''.format(argvs[0], argvs[1], argvs[2], err_msg=(argvs[3] if argvs[3] else ''))))
 
 
 def GotoFolder(strFolder):
@@ -180,15 +183,17 @@ class Timing(object):
         trigger = IntervalTrigger(seconds=intSec)
         self.scdl.add_job(job, trigger)
     
-    def add_cycle(self,job,args):
+    def add_cycle(self, job, args):
         cycle_meg = args[0]
         day_meg = args[1]
         hour_meg = args[2]
         minutes_meg = args[3]
         if cycle_meg == 'week':
-            self.scdl.add_job(job, 'cron',day = day_meg,hour = hour_meg,minute = minutes_meg)
+            trigger = CronTrigger(day=day_meg, hour=hour_meg, minute=minutes_meg)
+            self.scdl.add_job(job, trigger)
         elif cycle_meg == 'day':
-            self.scdl.add_job(job, 'cron',hour = hour_meg,minute = minutes_meg)
+            trigger = CronTrigger(hour=hour_meg, minute=minutes_meg)
+            self.scdl.add_job(job, trigger)
     
     def add_once(self, job, rdate):
         try:
@@ -267,7 +272,7 @@ def TraceAnalyse(strTraceFolder):
                         intErrFlag += 1
                     reErr = None
                 if intErrFlag > 0:
-                    openExcel.save('TraceAnalyze_' +    
+                    openExcel.save('TraceAnalyze_' + 
                                    strFileName + '.xls')
                 else:
                     strOut = '--- No error find in "{}"'.format(strFileName)
