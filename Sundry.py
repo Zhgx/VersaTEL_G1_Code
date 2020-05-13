@@ -184,15 +184,15 @@ class Timing(object):
         self.scdl.add_job(job, trigger)
     
     def add_cycle(self, job, args):
-        cycle_meg = args[0]
-        day_meg = args[1]
-        hour_meg = args[2]
-        minutes_meg = args[3]
-        if cycle_meg == 'week':
-            trigger = CronTrigger(day=day_meg, hour=hour_meg, minute=minutes_meg)
+        cycle = args[0]
+        day = args[1]
+        hours = args[2]
+        minutes = args[3]
+        if cycle == 'week':
+            trigger = CronTrigger(day_of_week=day, hour=hours, minute=minutes)
             self.scdl.add_job(job, trigger)
-        elif cycle_meg == 'day':
-            trigger = CronTrigger(hour=hour_meg, minute=minutes_meg)
+        elif cycle == 'day':
+            trigger = CronTrigger(hour=hours, minute=minutes)
             self.scdl.add_job(job, trigger)
     
     def add_once(self, job, rdate):
