@@ -112,12 +112,22 @@ tlu = Time Last Update
 
         if mode == 'rt':
             StatusHAAP = haap_rt_info_to_show()
-            StatusHAAP.sort(key=operator.itemgetter(0))
             StatusSANSW = sansw_rt_info_to_show()
-            StatusSANSW.sort(key=operator.itemgetter(0))
-            tlu_haap = s.time_now_to_show()
-            tlu_sansw = s.time_now_to_show()
-            status_warning = 0
+            if StatusHAAP:
+                StatusHAAP.sort(key=operator.itemgetter(0))
+                tlu_haap = s.time_now_to_show()
+                status_warning = 0
+            else:
+                tlu_haap = s.time_now_to_show()
+                status_warning = 0
+                
+            if StatusSANSW: 
+                StatusSANSW.sort(key=operator.itemgetter(0))
+                tlu_sansw = s.time_now_to_show()
+                status_warning = 0
+            else:
+                tlu_sansw = s.time_now_to_show()
+                status_warning = 0
 
         elif mode == 'db':
             lstWarningList = db.get_unconfirm_warning()
