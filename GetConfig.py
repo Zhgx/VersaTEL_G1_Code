@@ -101,8 +101,6 @@ class EngineConfig(object):
         return self.cfg.getint('EngineSetting', 'trace_level')
 
 
-
-
 class DBConfig(object):
     """docstring for DBConfig"""
 
@@ -151,13 +149,16 @@ class SwitchConfig(object):
 
     def SSH_port(self):
         return self.cfg.getint('SANSwitcheSetting', 'ssh_port')
-
+    
     def username(self):
         return str(self.cfg.get('SANSwitcheSetting', 'username'))
 
     def password(self):
         return str(self.cfg.get('SANSwitcheSetting', 'password'))
-
+    
+    def sw_status(self):
+        return self.cfg.get('SANSwitcheSetting', 'status')
+    
     def threshold_total(self):
         lstThreshold = []
         # level1 = self.cfg.getint('Threshold', 'SWTotal_increase_Notify')
@@ -167,7 +168,6 @@ class SwitchConfig(object):
         lstThreshold.append(level2)
         lstThreshold.append(level3)
         return tuple(lstThreshold)
-
 
 
 class EmailConfig(object):
@@ -250,12 +250,12 @@ class Setting(object):
             oddRegularTrace[i[0]] = i[1]
         return oddRegularTrace
 
+
 class Cycle(object):
     """docstring for Cycle"""
 
     def __init__(self):
         self.cfg = read_config_file()
-
 
     def cron_cycle(self):
         return self.cfg.get('Cycle', 'cycle')
@@ -278,6 +278,7 @@ class General(object):
 
     def get_PRODUCT(self):
         return str(self.cfg.get('General', 'PRODUCT'))
+
 
 if __name__ == '__main__':
 

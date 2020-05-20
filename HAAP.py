@@ -460,6 +460,7 @@ class Uptime(object):
             return self._uptime_list()
 
     def uptime_second(self):
+        
         uptime_list = self.uptime_list()
         time_show = s.time_now_to_show()
         if uptime_list:
