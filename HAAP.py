@@ -469,7 +469,7 @@ class Uptime(object):
             d = uptime_list[0]
             h = uptime_list[1]
             m = uptime_list[2]
-            #st : second uptime 
+            # st : second uptime 
             st = uptime_list[3]
             if d:
                 intSecond += d * 24 * 3600
@@ -481,9 +481,6 @@ class Uptime(object):
                 intSecond += st
             return intSecond
         else:
-            str_to_write = "%s:we will get a 0" % time_show
-            with open('get0.txt', mode='a+') as f:
-                f.write(str_to_write + '\n')
             return 0
 
     def uptime_to_show(self):

@@ -24,13 +24,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                      {% for lstWarning in lstWarningList %}
+                            {% for lstWarning in lstWarningList %}
                                 <tr class="danger">
-                             {% for status in lstWarning %}
-                                  <td>{{ status }}</td>
-                         {% endfor %}
+                            {% for status in lstWarning %}
+                                <td>{{ status }}</td>
+                            {% endfor %}
                         </tr>
-                         {% endfor %}
+                    {% endfor %}
                     </tbody>
                 </table>
                 <!--确认按钮-->
