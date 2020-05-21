@@ -213,7 +213,7 @@ def haap_interval_check(intInterval):
 
 
 def sansw_interval_check(intInterval):
-    if sw_status == 'yes':
+    if sw_enable_status == 'yes':
         t = s.Timing()
         t.add_interval(check_all_sansw, intInterval)
         t.stt()
