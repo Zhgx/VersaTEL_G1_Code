@@ -31,12 +31,13 @@ cron_cycle = cycle_msg.cron_cycle()
 cron_day = cycle_msg.cron_day()
 cron_hour = cycle_msg.cron_hour()
 cron_minutes = cycle_msg.cron_minutes()
-cycle_msg_args = [cron_cycle,cron_day,cron_hour,cron_minutes]
+cycle_msg_args = [cron_cycle, cron_day, cron_hour, cron_minutes]
 
 swcfg = gc.SwitchConfig()
 tuplThresholdTotal = swcfg.threshold_total()
 lst_sansw_IP = swcfg.list_switch_IP()
 lst_sansw_alias = swcfg.list_switch_alias()
+sw_status = swcfg.sw_status()
 
 haapcfg = gc.EngineConfig()
 oddEngines = haapcfg._odd_engines()
@@ -76,6 +77,7 @@ def monitor_db_4_thread():
     t4.setDaemon(True)
     t5.setDaemon(True)
     t1.start()
+    
     t2.start()
     t3.start()
     t4.start()
@@ -165,7 +167,8 @@ tlu = Time Last Update
                                status_haap=StatusHAAP,
                                status_sansw=StatusSANSW,
                                status_warning=status_warning,
-                               interval_web_refresh=interval_web_refresh
+                               interval_web_refresh=interval_web_refresh,
+                               sw_status=sw_status
                                )
 
     @app.route("/warning/")
@@ -174,7 +177,7 @@ tlu = Time Last Update
         return render_template("warning.html", lstWarningList=lstWarningList,
                                )
         
-    @app.route("/send_email",methods=['GET', 'POST'])
+    @app.route("/send_email", methods=['GET', 'POST'])
     def send_emails():
         if request.args.get('ey'):
             ey = request.args.get('ey')
@@ -210,9 +213,12 @@ def haap_interval_check(intInterval):
 
 
 def sansw_interval_check(intInterval):
-    t = s.Timing()
-    t.add_interval(check_all_sansw, intInterval)
-    t.stt()
+    if sw_status == 'yes':
+        t = s.Timing()
+        t.add_interval(check_all_sansw, intInterval)
+        t.stt()
+    else:
+        return
 
 
 def warning_interval_check(intInterval):
@@ -290,12 +296,9 @@ class haap_judge(object):
 
     def judge_reboot(self, uptime_second_rt, uptime_second_db):
         str_engine_restart = 'Engine reboot %d secends ago'
-        if uptime_second_rt == None:
+        if uptime_second_rt == None or uptime_second_rt == 0:
             return True
         elif uptime_second_rt < uptime_second_db:
-            str_to_write = "%s:uptime_rt: %d uptime_db:%d"%(s.time_now_to_show(),uptime_second_rt,uptime_second_db)
-            with open('uptime.txt',mode='a+') as f:
-                f.write(str_to_write+'\n')
             db.insert_warning(self.strTimeNow, self.host,
                               'engine', 2, str_engine_restart % (uptime_second_rt), 0)
             self.lstWarningToSend.append([self.strTimeNow, self.host,
