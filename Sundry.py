@@ -4,6 +4,8 @@ import sys
 import time
 import datetime
 import re
+import xlwt
+import pprint
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -234,60 +236,66 @@ class TimeNow(object):
     def wd(self):  # Day of the Week
         return (self._now[6])
 
+class TraceAnalyse():
+    def __init__(self, strTraceFolder):
+        self.target = strTraceFolder
+        self.regular_dict = oddHAAPErrorDict
 
-def TraceAnalyse(strTraceFolder):
-    import xlwt
+    def _get_trace_file_list(self):
+        lstTraceFile = []
+        lstFile = os.listdir('.')
+        for strFileName in lstFile:
+            if (lambda i: i.startswith('Trace_'))(strFileName):
+                lstTraceFile.append(strFileName)
+        return lstTraceFile
 
-    def _read_file(strFileName):
+    def _read_file(slef, strFileName):
         try:
             with open(strFileName, 'r+') as f:
                 strTrace = f.read()
             return strTrace.strip().replace('\ufeff', '')
         except Exception as E:
             print('Open file "{}" failed with error:\n\t"{}"'.format(
-                strFileName, E))
+                strFileName, E)) 
 
-    def _trace_analize(lstTraceFiles):
-        intErrFlag = 0
-        strRunResult = ''
-        for strFileName in lstTraceFiles:
-            if (lambda i: i.startswith('Trace_'))(strFileName):
-                print('\n"{}"  analyzing ...'.format(strFileName))
-                strRunResult += '\n"{}"  analyzing ...\n'.format(strFileName)
-                openExcel = xlwt.Workbook()
-                for strErrType in oddHAAPErrorDict.keys():
-                    reErr = re.compile(oddHAAPErrorDict[strErrType])
-                    tupErr = reErr.findall(_read_file(strFileName))
-                    if len(tupErr) > 0:
-                        strOut = ' *** "{}" times of "{}" found...'.format(
-                            (len(tupErr) + 1), strErrType)
-                        print(strOut)
-                        strRunResult += strOut
-                        objSheet = openExcel.add_sheet(strErrType)
-                        for x in range(len(tupErr)):
-                            for y in range(len(tupErr[x])):
-                                objSheet.write(
-                                    x, y, tupErr[x][y].strip().replace(
-                                        "\n", '', 1))
-                        intErrFlag += 1
-                    reErr = None
-                if intErrFlag > 0:
-                    openExcel.save('TraceAnalyze_' + 
-                                   strFileName + '.xls')
-                else:
-                    strOut = '--- No error find in "{}"'.format(strFileName)
-                    print(strOut)
-                    strRunResult += strOut
-                intErrFlag = 0
-        return strRunResult
+    def _write_to_excel(self, objExcel,error_type,tpl_error):
+        objSheet = objExcel.add_sheet(error_type)
+        for x in range(len(tpl_error)):
+            for y in range(len(tpl_error[x])):
+                objSheet.write(
+                    x, y, tpl_error[x][y].strip().replace(
+                        "\n", '', 1))
 
-    strOriginalFolder = os.getcwd()
-    try:
-        GotoFolder(strTraceFolder)
-        lstTraceFile = os.listdir('.')
-        _trace_analize(lstTraceFile)
-    finally:
-        os.chdir(strOriginalFolder)
+    def _find_error(self, strFileName):
+        strTrace = self._read_file(strFileName)
+        objExcel = xlwt.Workbook()
+        save_flag = 0
+        for error_type in self.regular_dict.keys():
+            re_error = re.compile(eval(self.regular_dict[error_type]))
+            tpl_error = re_error.findall(strTrace)
+            if len(tpl_error) > 0:
+                print('*** %-3.d times of %-12s found...' % (len(tpl_error)+1,error_type))
+                self._write_to_excel(objExcel,error_type,tpl_error)
+                save_flag += 1
+        if save_flag:
+            objExcel.save('TraceAnalyze_%s' % strFileName.replace('.log','.xls'))
+        else:
+            print('--- No error found in "%s"' % strFileName)
+
+    def _analyse_file(self):
+        lstTraceFiles = self._get_trace_file_list()
+        for trace_file in lstTraceFiles:
+            print('\nStart to analysing %s ...' % trace_file)
+            self._find_error(trace_file)
+            
+    def run(self):
+        strOriginalFolder = os.getcwd()
+        try:
+            GotoFolder(self.target)
+            self._analyse_file()
+        finally:
+            os.chdir(strOriginalFolder)
+
 
 
 if __name__ == '__main__':
