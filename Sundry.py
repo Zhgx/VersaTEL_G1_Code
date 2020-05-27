@@ -266,6 +266,16 @@ class TraceAnalyse():
                     x, y, tpl_error[x][y].strip().replace(
                         "\n", '', 1))
 
+    def _generate_excel_file_name(self, log_file_name):
+        if log_file_name.endswith('.log'):
+            file_name = log_file_name.replace('.log','.xls')
+        elif log_file_name.endswith('.txt'):
+            file_name = log_file_name.replace('.txt','.xls')
+        else:
+            file_name = '%s.xls' % log_file_name
+        return 'TraceAnalyze_%s' % file_name
+
+
     def _find_error(self, strFileName):
         strTrace = self._read_file(strFileName)
         objExcel = xlwt.Workbook()
@@ -278,7 +288,8 @@ class TraceAnalyse():
                 self._write_to_excel(objExcel,error_type,tpl_error)
                 save_flag += 1
         if save_flag:
-            objExcel.save('TraceAnalyze_%s' % strFileName.replace('.log','.xls'))
+            xls_file_name = self._generate_excel_file_name(strFileName)
+            objExcel.save(xls_file_name)
         else:
             print('--- No error found in "%s"' % strFileName)
 
