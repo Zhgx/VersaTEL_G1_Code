@@ -249,14 +249,7 @@ class Setting(object):
         for i in TraceRegular2:
             oddRegularTrace[i[0]] = i[1]
         return oddRegularTrace
-
-
-class Cycle(object):
-    """docstring for Cycle"""
-
-    def __init__(self):
-        self.cfg = read_config_file()
-
+#cycle-setting
     def cron_cycle(self):
         return self.cfg.get('Cycle', 'cycle')
 
@@ -268,6 +261,7 @@ class Cycle(object):
     
     def cron_minutes(self):
         return self.cfg.getint('Cycle', 'minutes')
+
 
 
 class General(object):

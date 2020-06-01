@@ -25,11 +25,10 @@ interval_haap_update = setting.interval_haap_update()
 interval_sansw_update = setting.interval_sansw_update()
 interval_warning_check = setting.interval_warning_check()
 
-cycle_msg = gc.Cycle()
-cron_cycle = cycle_msg.cron_cycle()
-cron_day = cycle_msg.cron_day()
-cron_hour = cycle_msg.cron_hour()
-cron_minutes = cycle_msg.cron_minutes()
+cron_cycle = setting.cron_cycle()
+cron_day = setting.cron_day()
+cron_hour = setting.cron_hour()
+cron_minutes = setting.cron_minutes()
 cycle_msg_args = [cron_cycle, cron_day, cron_hour, cron_minutes]
 
 swcfg = gc.SwitchConfig()
