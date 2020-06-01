@@ -144,6 +144,8 @@ class SSHConn(object):
                                  username=self._username,
                                  password=self._password,
                                  timeout=self._timeout)
+            time.sleep(1)
+            objSSHClient.exec_command("\x003")
             self.SSHConnection = objSSHClient
         except:
             pass
