@@ -259,7 +259,7 @@ def main():
             print(strATHelp)
         else:
             if s.is_folder(sys.argv[2]):
-                s.TraceAnalyse(sys.argv[2])
+                s.TraceAnalyse(sys.argv[2]).run()
             else:
                 print('Please provide correct trace folder')
     #OK  python Main.py ec 10.203.1.223 cmd.txt
