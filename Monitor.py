@@ -1,6 +1,5 @@
 # coding:utf-8
 from __future__ import print_function
-import schedule
 import time
 from flask import Flask, render_template, request
 from gevent.pywsgi import WSGIServer
