@@ -47,7 +47,7 @@ PCSANSwitchCommand_list = ['ipaddrshow',
 
 # TraceRegular
 TraceRegular2 = [['abts_received',
-                      "r'(.*)- Port (A1|A2) reports (ABTS received):\s.*(initiator #)(\d+).*(0x.{6})\s?'"],
+                  "r'(.*)- Port (A1|A2) reports (ABTS received):\s.*(initiator #)(\d+).*(0x.{6})\s?'"],
                  ['abts_frame',
                      "r'(.*)(P0|P1|P2|P3):   (ABTS frame received from port ID )(0x.{6})\s(.*(Initiator number)=(\d+)\s?)?(\s.*)?'"],
                  ['queuefull',
@@ -149,16 +149,16 @@ class SwitchConfig(object):
 
     def SSH_port(self):
         return self.cfg.getint('SANSwitcheSetting', 'ssh_port')
-    
+
     def username(self):
         return str(self.cfg.get('SANSwitcheSetting', 'username'))
 
     def password(self):
         return str(self.cfg.get('SANSwitcheSetting', 'password'))
-    
+
     def sw_status(self):
         return self.cfg.get('SANSwitcheSetting', 'enable')
-    
+
     def threshold_total(self):
         lstThreshold = []
         # level1 = self.cfg.getint('Threshold', 'SWTotal_increase_Notify')
@@ -249,19 +249,19 @@ class Setting(object):
         for i in TraceRegular2:
             oddRegularTrace[i[0]] = i[1]
         return oddRegularTrace
-#cycle-setting
+# cycle-setting
+
     def cron_cycle(self):
         return self.cfg.get('Cycle', 'cycle')
 
     def cron_day(self):
         return self.cfg.getint('Cycle', 'day')
-    
+
     def cron_hour(self):
         return self.cfg.getint('Cycle', 'hour')
-    
+
     def cron_minutes(self):
         return self.cfg.getint('Cycle', 'minutes')
-
 
 
 class General(object):
