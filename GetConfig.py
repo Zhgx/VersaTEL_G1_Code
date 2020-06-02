@@ -155,13 +155,8 @@ class SwitchConfig(object):
 
     def password(self):
         return str(self.cfg.get('SANSwitcheSetting', 'password'))
-<<<<<<< HEAD
 
-    def sw_status(self):
-=======
-    
     def sw_enable_status(self):
->>>>>>> 0f6648f7c59d752c0be216fce6f5b5abe30aaa7c
         return self.cfg.get('SANSwitcheSetting', 'enable')
 
     def threshold_total(self):
@@ -212,7 +207,7 @@ class Setting(object):
 
     def message_level(self):
         return msglevel
-# Gets the time interval Settings
+# Get the time interval Settings
 
     def interval_web_refresh(self):
         return self.cfg.getint('Interval', 'web_refresh')
@@ -225,7 +220,7 @@ class Setting(object):
 
     def interval_warning_check(self):
         return self.cfg.getint('Interval', 'warning_check')
-# Gets mail cycle Settings
+# Get mail cycle Settings
 
     def cron_cycle(self):
         return self.cfg.get('Cycle', 'cycle')
