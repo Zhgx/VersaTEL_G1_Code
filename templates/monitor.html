@@ -99,7 +99,7 @@
 						{% endif %}
 					</div>
 				</div>
-				{%if sw_status == 'yes'%}
+				{%if sw_enable_status == 'yes'%}
 				<div class="row clearfix" id="SW_Title_div">
 					<div class="col-md-12 column">
 						<table class="table">
@@ -198,7 +198,7 @@ $("#Ey").attr("value")
 $(document).ready(function(){ 																					
  $(".btn").click(function(){ 
  var trace = $(this).val()
- alert("已獲取trace於文件夾中");		
+ alert("请在“trace”目录中查看获取结果");		
     	 $.ajax({
          url:"/",
          type:"GET",

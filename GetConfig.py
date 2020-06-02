@@ -155,8 +155,13 @@ class SwitchConfig(object):
 
     def password(self):
         return str(self.cfg.get('SANSwitcheSetting', 'password'))
+<<<<<<< HEAD
 
     def sw_status(self):
+=======
+    
+    def sw_enable_status(self):
+>>>>>>> 0f6648f7c59d752c0be216fce6f5b5abe30aaa7c
         return self.cfg.get('SANSwitcheSetting', 'enable')
 
     def threshold_total(self):
