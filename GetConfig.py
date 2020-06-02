@@ -250,7 +250,6 @@ class Setting(object):
             oddRegularTrace[i[0]] = i[1]
         return oddRegularTrace
 # cycle-setting
-
     def cron_cycle(self):
         return self.cfg.get('Cycle', 'cycle')
 

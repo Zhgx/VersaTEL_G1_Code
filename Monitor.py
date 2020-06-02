@@ -64,32 +64,16 @@ def monitor_rt_1_thread():
 
 
 def monitor_db_4_thread():
-    t1 = Thread(target=start_web, args=('db',))
-    t2 = Thread(target=haap_interval_check, args=(interval_haap_update,))
-    t3 = Thread(target=sansw_interval_check, args=(interval_sansw_update,))
-    t4 = Thread(target=warning_interval_check, args=(interval_warning_check,))
-    t5 = Thread(target=Monitoring_heart_check, args=(cycle_msg_args,))
-    t1.setDaemon(True)
-    t2.setDaemon(True)
-    t3.setDaemon(True)
-    t4.setDaemon(True)
-    t5.setDaemon(True)
-    t1.start()
-
-    t2.start()
-    t3.start()
-    t4.start()
-    t5.start()
+    target=[start_web,haap_interval_check,sansw_interval_check, \
+        warning_interval_check,Monitoring_heart_check]
+    args=[('db',),(interval_haap_update,),(interval_sansw_update,),\
+        (interval_warning_check,),(cycle_msg_args,)]
+    for target,args in zip(target,args):
+        t=Thread(target=target,args=args)
+        t.setDaemon(True)
+        t.start()
     try:
-        while t5.isAlive():
-            pass
-        while t4.isAlive():
-            pass
-        while t3.isAlive():
-            pass
-        while t2.isAlive():
-            pass
-        while t1.isAlive():
+        while t.is_alive():
             pass
     except KeyboardInterrupt:
         stopping_web(3)
