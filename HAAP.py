@@ -145,23 +145,24 @@ def periodically_check(ip):
     Action(ip, telnet_port, passwd, FTP_port).periodic_check(
         lstPCCommand, strPCFolder, PCFile_name)
 
-
-def status_for_judging_realtime(ip):
-    objEngine = Status(ip, telnet_port, passwd, FTP_port)
-    lstStatus = objEngine.over_all_and_warning()
-    intUpTimeSec = objEngine.uptime_second()
-    return lstStatus, intUpTimeSec
-
-
-def list_status_for_realtime_show():
-    '''
-[['1.1.1.1',0,'2d','M',0,0,0],['1.1.1.1',0,'2d','M',0,1,2]]
-    '''
-    lstStatus = []
-    for i in list_engines_alias:
-        objEngine = Status(list_engines_IP[i], telnet_port, passwd, FTP_port)
-        lstStatusWarning = list(objEngine.over_all_and_warning())
-    return lstStatus
+# def status_for_judging_realtime(ip):
+#     objEngine = Status(ip, telnet_port, passwd, FTP_port)
+# #     lstStatus = objEngine.over_all_and_warning()
+#     lstStatus = objEngine.over_all()
+#     intUpTimeSec = objEngine.uptime_second()
+#     return lstStatus, intUpTimeSec
+# 
+# 
+# def list_status_for_realtime_show():
+#     '''
+# [['1.1.1.1',0,'2d','M',0,0,0],['1.1.1.1',0,'2d','M',0,1,2]]
+#     '''
+#     lstStatus = []
+#     for i in list_engines_alias:
+#         objEngine = Status(list_engines_IP[i], telnet_port, passwd, FTP_port)
+# #         lstStatusWarning = list(objEngine.over_all_and_warning())
+#         lstStatusWarning = list(objEngine.over_all())
+#     return lstStatus
 
 
 def origin(haap_alias, objEngine):
@@ -171,7 +172,6 @@ def origin(haap_alias, objEngine):
     else:
         pass
     return dicOrigin
-
 
 
 def info(haap_alias, objEngine):
@@ -460,22 +460,25 @@ class Uptime(object):
             return self._uptime_list()
 
     def uptime_second(self):
+        
         uptime_list = self.uptime_list()
+        time_show = s.time_now_to_show()
         if uptime_list:
             intSecond = 0
             # d, h, m, s means days hours minutes seconds
             d = uptime_list[0]
             h = uptime_list[1]
             m = uptime_list[2]
-            s = uptime_list[3]
+            # st : second uptime 
+            st = uptime_list[3]
             if d:
                 intSecond += d * 24 * 3600
             if h:
                 intSecond += h * 3600
             if m:
                 intSecond += m * 60
-            if s:
-                intSecond += s
+            if st:
+                intSecond += st
             return intSecond
         else:
             return 0
@@ -511,7 +514,7 @@ class Status(Action):
             self.objUpTime = Uptime(self.dictInfo['vpd'])
         else:
             self.objUpTime = None
-        #print ('dictinfo:',self.dictInfo)
+        # print ('dictinfo:',self.dictInfo)
 
     @s.deco_Exception
     def _get_info_to_dict(self):
@@ -657,7 +660,7 @@ class Status(Action):
         else:
             lstStatus[4] = 'OK'
 
-        #mirror_status = lstStatus[5]
+        # mirror_status = lstStatus[5]
         if lstStatus[5] == '--':
             pass
         elif lstStatus[5] == 1:
@@ -685,5 +688,5 @@ class Status(Action):
 
 if __name__ == '__main__':
    # Paul = Status('10.10.88.94',23,'abc',21,5)
-    #print(Paul.dictInfo())
+    # print(Paul.dictInfo())
     pass
