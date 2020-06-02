@@ -162,7 +162,6 @@ class Setting(object):
         self.cfg = read_config_file()
         self.sys_cfg = read_sys_config_file()
 
-    # 待测试
     def message_level(self):
         return int(self.sys_cfg.get('MessageLogging', 'msglevel'))
 
@@ -178,7 +177,6 @@ class Setting(object):
     def interval_warning_check(self):
         return self.cfg.getint('Interval', 'warning_check')
 
-    # 待测试
     def folder_collection(self):
         return  self.sys_cfg.get('FolderSetting', 'collection')
 
