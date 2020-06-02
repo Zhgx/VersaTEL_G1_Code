@@ -36,7 +36,7 @@ swcfg = gc.SwitchConfig()
 tuplThresholdTotal = swcfg.threshold_total()
 lst_sansw_IP = swcfg.list_switch_IP()
 lst_sansw_alias = swcfg.list_switch_alias()
-sw_status = swcfg.sw_status()
+sw_enable_status = swcfg.sw_enable_status()
 
 haapcfg = gc.EngineConfig()
 oddEngines = haapcfg._odd_engines()
@@ -167,7 +167,7 @@ tlu = Time Last Update
                                status_sansw=StatusSANSW,
                                status_warning=status_warning,
                                interval_web_refresh=interval_web_refresh,
-                               sw_status=sw_status
+                               sw_enable_status=sw_enable_status
                                )
 
     @app.route("/warning/")
@@ -212,7 +212,7 @@ def haap_interval_check(intInterval):
 
 
 def sansw_interval_check(intInterval):
-    if sw_status == 'yes':
+    if sw_enable_status == 'yes':
         t = s.Timing()
         t.add_interval(check_all_sansw, intInterval)
         t.stt()
