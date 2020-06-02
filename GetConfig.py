@@ -101,8 +101,6 @@ class EngineConfig(object):
         return self.cfg.getint('EngineSetting', 'trace_level')
 
 
-
-
 class DBConfig(object):
     """docstring for DBConfig"""
 
@@ -151,13 +149,16 @@ class SwitchConfig(object):
 
     def SSH_port(self):
         return self.cfg.getint('SANSwitcheSetting', 'ssh_port')
-
+    
     def username(self):
         return str(self.cfg.get('SANSwitcheSetting', 'username'))
 
     def password(self):
         return str(self.cfg.get('SANSwitcheSetting', 'password'))
-
+    
+    def sw_enable_status(self):
+        return self.cfg.get('SANSwitcheSetting', 'enable')
+    
     def threshold_total(self):
         lstThreshold = []
         # level1 = self.cfg.getint('Threshold', 'SWTotal_increase_Notify')
@@ -178,9 +179,8 @@ class EmailConfig(object):
     def email_host(self):
         return str(self.cfg.get('EmailSetting', 'host'))
 
-    # port of mail server 
-    def email_host_port(self):
-        return self.cfg.getint('EmailSetting', 'host_port')
+    def email_port(self):
+        return self.cfg.getint('EmailSetting', 'port')
 
     def email_password(self):
         return str(self.cfg.get('EmailSetting', 'password'))
@@ -191,12 +191,12 @@ class EmailConfig(object):
     def email_receiver(self):
         return str(self.cfg.get('EmailSetting', 'receiver'))
 
-    def email_sub(self):
-        return str(self.cfg.get('EmailSetting', 'email_sub'))
-
     # Whether to Turn off Mail Function
     def email_enable(self):
         return self.cfg.get('EmailSetting', 'enable')
+
+    def email_encrypt(self):
+        return self.cfg.get('EmailSetting', 'encrypt')
 
 
 class Setting(object):
@@ -250,6 +250,26 @@ class Setting(object):
             oddRegularTrace[i[0]] = i[1]
         return oddRegularTrace
 
+
+class Cycle(object):
+    """docstring for Cycle"""
+
+    def __init__(self):
+        self.cfg = read_config_file()
+
+    def cron_cycle(self):
+        return self.cfg.get('Cycle', 'cycle')
+
+    def cron_day(self):
+        return self.cfg.getint('Cycle', 'day')
+    
+    def cron_hour(self):
+        return self.cfg.getint('Cycle', 'hour')
+    
+    def cron_minutes(self):
+        return self.cfg.getint('Cycle', 'minutes')
+
+
 class General(object):
     """docstring for General"""
 
@@ -258,6 +278,7 @@ class General(object):
 
     def get_PRODUCT(self):
         return str(self.cfg.get('General', 'PRODUCT'))
+
 
 if __name__ == '__main__':
 

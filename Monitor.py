@@ -1,5 +1,6 @@
 # coding:utf-8
 from __future__ import print_function
+import time
 from flask import Flask, render_template, request
 from gevent.pywsgi import WSGIServer
 from threading import Thread
@@ -24,10 +25,18 @@ interval_haap_update = setting.interval_haap_update()
 interval_sansw_update = setting.interval_sansw_update()
 interval_warning_check = setting.interval_warning_check()
 
+cycle_msg = gc.Cycle()
+cron_cycle = cycle_msg.cron_cycle()
+cron_day = cycle_msg.cron_day()
+cron_hour = cycle_msg.cron_hour()
+cron_minutes = cycle_msg.cron_minutes()
+cycle_msg_args = [cron_cycle, cron_day, cron_hour, cron_minutes]
+
 swcfg = gc.SwitchConfig()
 tuplThresholdTotal = swcfg.threshold_total()
 lst_sansw_IP = swcfg.list_switch_IP()
 lst_sansw_alias = swcfg.list_switch_alias()
+sw_enable_status = swcfg.sw_enable_status()
 
 haapcfg = gc.EngineConfig()
 oddEngines = haapcfg._odd_engines()
@@ -60,15 +69,21 @@ def monitor_db_4_thread():
     t2 = Thread(target=haap_interval_check, args=(interval_haap_update,))
     t3 = Thread(target=sansw_interval_check, args=(interval_sansw_update,))
     t4 = Thread(target=warning_interval_check, args=(interval_warning_check,))
+    t5 = Thread(target=Monitoring_heart_check, args=(cycle_msg_args,))
     t1.setDaemon(True)
     t2.setDaemon(True)
     t3.setDaemon(True)
     t4.setDaemon(True)
+    t5.setDaemon(True)
     t1.start()
+    
     t2.start()
     t3.start()
     t4.start()
+    t5.start()
     try:
+        while t5.isAlive():
+            pass
         while t4.isAlive():
             pass
         while t3.isAlive():
@@ -92,18 +107,28 @@ tlu = Time Last Update
     def home():
         if request.args.get('trace'):
             TRACE = request.args.get('trace')
-            haap.get_trace(TRACE,trace_level_cfg)
+            haap.get_trace(TRACE, trace_level_cfg)
         else:
             pass
 
         if mode == 'rt':
             StatusHAAP = haap_rt_info_to_show()
-            StatusHAAP.sort(key=operator.itemgetter(0))
             StatusSANSW = sansw_rt_info_to_show()
-            StatusSANSW.sort(key=operator.itemgetter(0))
-            tlu_haap = s.time_now_to_show()
-            tlu_sansw = s.time_now_to_show()
-            status_warning = 0
+            if StatusHAAP:
+                StatusHAAP.sort(key=operator.itemgetter(0))
+                tlu_haap = s.time_now_to_show()
+                status_warning = 0
+            else:
+                tlu_haap = s.time_now_to_show()
+                status_warning = 0
+                
+            if StatusSANSW: 
+                StatusSANSW.sort(key=operator.itemgetter(0))
+                tlu_sansw = s.time_now_to_show()
+                status_warning = 0
+            else:
+                tlu_sansw = s.time_now_to_show()
+                status_warning = 0
 
         elif mode == 'db':
             lstWarningList = db.get_unconfirm_warning()
@@ -141,7 +166,8 @@ tlu = Time Last Update
                                status_haap=StatusHAAP,
                                status_sansw=StatusSANSW,
                                status_warning=status_warning,
-                               interval_web_refresh=interval_web_refresh
+                               interval_web_refresh=interval_web_refresh,
+                               sw_enable_status=sw_enable_status
                                )
 
     @app.route("/warning/")
@@ -149,7 +175,17 @@ tlu = Time Last Update
         lstWarningList = db.get_unconfirm_warning()          
         return render_template("warning.html", lstWarningList=lstWarningList,
                                )
-
+        
+    @app.route("/send_email", methods=['GET', 'POST'])
+    def send_emails():
+        if request.args.get('ey'):
+            ey = request.args.get('ey')
+            se.send_test()
+            meg = "success"
+            return meg
+        else:
+            pass
+    
     # FLASK_APP = myapp.py
     # FLASK_ENV = development
     WSGIServer(('0.0.0.0', 5000), app).serve_forever()
@@ -176,14 +212,23 @@ def haap_interval_check(intInterval):
 
 
 def sansw_interval_check(intInterval):
-    t = s.Timing()
-    t.add_interval(check_all_sansw, intInterval)
-    t.stt()
+    if sw_enable_status == 'yes':
+        t = s.Timing()
+        t.add_interval(check_all_sansw, intInterval)
+        t.stt()
+    else:
+        return
 
 
 def warning_interval_check(intInterval):
     t = s.Timing()
     t.add_interval(warning_check, intInterval)
+    t.stt()
+
+
+def Monitoring_heart_check(cycle_msg_args):
+    t = s.Timing()
+    t.add_cycle(se.send_live, cycle_msg_args)
     t.stt()
 
 
@@ -250,7 +295,7 @@ class haap_judge(object):
 
     def judge_reboot(self, uptime_second_rt, uptime_second_db):
         str_engine_restart = 'Engine reboot %d secends ago'
-        if uptime_second_rt == None:
+        if uptime_second_rt == None or uptime_second_rt == 0:
             return True
         elif uptime_second_rt < uptime_second_db:
             db.insert_warning(self.strTimeNow, self.host,

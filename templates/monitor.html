@@ -7,28 +7,31 @@
 <link href="{{ url_for('static',filename='bootstrap.css') }}"
 	rel="stylesheet" type="text/css" />
 <script src="{{ url_for('static',filename='JQuery.js') }}"></script>
+<link rel="stylesheet"
+	href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<script
+	src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-
-
-
 	<div class="container">
-
 		<div class="row clearfix">
 			<div class="col-md-12 column">
-
 				<nav class="navbar navbar-default" role="navigation">
-					<div class="navbar-header">
-						<button type="button" class="navbar-toggle" data-toggle="collapse"
-							data-target="#bs-example-navbar-collapse-1">
-							<span class="sr-only">Toggle navigation</span><span
-								class="icon-bar"></span><span class="icon-bar"></span><span
-								class="icon-bar"></span>
-						</button>
-						<a class="navbar-brand" >Loxoll</a>
+					<div class="container-fluid">
+						<div class="navbar-header">
+							<a class="navbar-brand">Loxoll</a>
+						</div>
+						<ul class="nav navbar-nav navbar-right">
+							<li class="dropdown"><a href="#" class="dropdown-toggle"
+								data-toggle="dropdown">其他<b class="caret"></b>
+							</a>
+								<ul class="dropdown-menu">
+									<li><a href="javascript:void(0)" onclick="Ey()" id="Ey">邮件连接测试</a></li>
+								</ul></li>
+						</ul>
 					</div>
 				</nav>
-
 				{% if status_warning %}
 				<div class="alert alert-warning">
 					<a href="{{ url_for('warning') }}" target="" class="close"
@@ -96,8 +99,8 @@
 						{% endif %}
 					</div>
 				</div>
-
-				<div class="row clearfix">
+				{%if sw_enable_status == 'yes'%}
+				<div class="row clearfix" id="SW_Title_div">
 					<div class="col-md-12 column">
 						<table class="table">
 							<thead>
@@ -108,14 +111,13 @@
 									<th>
 										<h4>Last Update:&nbsp; {{ tlu_sansw }}</h4>
 									</th>
-								
+
 								</tr>
 							</thead>
 						</table>
 					</div>
 				</div>
-
-				<div class="row clearfix">
+				<div class="row clearfix" id="SW_div">
 					<div class="col-md-12 column">
 						{% if status_sansw %}
 						<table class="table">
@@ -149,6 +151,8 @@
 						{% endif %}
 					</div>
 				</div>
+				{% else %} {%endif%}
+
 
 				<div class="progress progress-striped">
 					<div class="progress-bar progress-success"></div>
@@ -189,11 +193,12 @@
 	</footer>
 
 	<script type="text/javascript">
+$("#Ey").attr("value")	
 	
 $(document).ready(function(){ 																					
  $(".btn").click(function(){ 
  var trace = $(this).val()
- alert("已獲取trace於文件夾中");		
+ alert("请在“trace”目录中查看获取结果");		
     	 $.ajax({
          url:"/",
          type:"GET",
@@ -205,6 +210,19 @@ $(document).ready(function(){
 	});
  }); 
 }); 
+
+function Ey(){
+var ey = $("#Ey").text()
+ $.ajax({
+         url:"/send_email",
+         type:"GET",
+           data:{
+             ey:ey
+         },
+         success:function (data) {
+			}																																																																																																																																			
+	});
+}
 </script>
 </body>
 </html>
