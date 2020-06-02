@@ -25,11 +25,10 @@ interval_haap_update = setting.interval_haap_update()
 interval_sansw_update = setting.interval_sansw_update()
 interval_warning_check = setting.interval_warning_check()
 
-cycle_msg = gc.Cycle()
-cron_cycle = cycle_msg.cron_cycle()
-cron_day = cycle_msg.cron_day()
-cron_hour = cycle_msg.cron_hour()
-cron_minutes = cycle_msg.cron_minutes()
+cron_cycle = setting.cron_cycle()
+cron_day = setting.cron_day()
+cron_hour = setting.cron_hour()
+cron_minutes = setting.cron_minutes()
 cycle_msg_args = [cron_cycle, cron_day, cron_hour, cron_minutes]
 
 swcfg = gc.SwitchConfig()
@@ -75,8 +74,8 @@ def monitor_db_4_thread():
     t3.setDaemon(True)
     t4.setDaemon(True)
     t5.setDaemon(True)
-    t1.start()
     
+    t1.start()
     t2.start()
     t3.start()
     t4.start()
@@ -121,8 +120,8 @@ tlu = Time Last Update
             else:
                 tlu_haap = s.time_now_to_show()
                 status_warning = 0
-                
-            if StatusSANSW: 
+
+            if StatusSANSW:
                 StatusSANSW.sort(key=operator.itemgetter(0))
                 tlu_sansw = s.time_now_to_show()
                 status_warning = 0
@@ -145,7 +144,7 @@ tlu = Time Last Update
                 tlu_haap = engine[0]
                 StatusHAAP = engine[1]
                 StatusHAAP.sort(key=operator.itemgetter(0))
-                
+
             else:
                 tlu_haap = s.time_now_to_show()
                 StatusHAAP = [0]
@@ -172,10 +171,10 @@ tlu = Time Last Update
 
     @app.route("/warning/")
     def warning():
-        lstWarningList = db.get_unconfirm_warning()          
+        lstWarningList = db.get_unconfirm_warning()
         return render_template("warning.html", lstWarningList=lstWarningList,
                                )
-        
+
     @app.route("/send_email", methods=['GET', 'POST'])
     def send_emails():
         if request.args.get('ey'):
@@ -185,7 +184,7 @@ tlu = Time Last Update
             return meg
         else:
             pass
-    
+
     # FLASK_APP = myapp.py
     # FLASK_ENV = development
     WSGIServer(('0.0.0.0', 5000), app).serve_forever()
@@ -240,10 +239,11 @@ def check_all_haap():
             for engine in lst_haap_alias:
                 lstRT = haap_info_for_judge(Info_from_engine)[engine]
                 lstDB = haap_info_for_judge(Info_from_DB.info)[engine]
-                haap_judge(lstRT, lstDB, engine).all_judge()  
+                haap_judge(lstRT, lstDB, engine).all_judge()
     finally:
-        db.haap_insert(datetime.datetime.now(), Origin_from_engine, Info_from_engine)
-    
+        db.haap_insert(datetime.datetime.now(),
+                       Origin_from_engine, Info_from_engine)
+
 
 def check_all_sansw():
     dicAll = sw.get_info_for_DB()
@@ -257,7 +257,8 @@ def check_all_sansw():
                 strIP = dic_sum_total['IP']
                 sansw_judge(int_total_RT, int_total_DB, strIP, sw_alias)
     finally:
-        db.switch_insert(datetime.datetime.now(), dicAll[0], dicAll[1], dicAll[2])
+        db.switch_insert(datetime.datetime.now(),
+                         dicAll[0], dicAll[1], dicAll[2])
 
 
 def warning_check():
@@ -285,13 +286,13 @@ class haap_judge(object):
         str_engine_AH = 'Engine AH'
         if AHstatus_rt == '--':
             return True
-        elif  AHstatus_rt != 'OK':
+        elif AHstatus_rt != 'OK':
             if AHstatus_rt != AHstatus_db:
                 db.insert_warning(self.strTimeNow, self.host,
                                   'engine', 2, str_engine_AH, 0)
                 self.lstWarningToSend.append([self.strTimeNow, self.host,
-                               self.alias, 2, str_engine_AH])
-            return True    
+                                              self.alias, 2, str_engine_AH])
+            return True
 
     def judge_reboot(self, uptime_second_rt, uptime_second_db):
         str_engine_restart = 'Engine reboot %d secends ago'
@@ -301,7 +302,7 @@ class haap_judge(object):
             db.insert_warning(self.strTimeNow, self.host,
                               'engine', 2, str_engine_restart % (uptime_second_rt), 0)
             self.lstWarningToSend.append([self.strTimeNow, self.host,
-                           self.alias, 2, str_engine_restart % (uptime_second_rt)])
+                                          self.alias, 2, str_engine_restart % (uptime_second_rt)])
 
     def judge_Status(self, Status_rt, Status_db):
         str_engine_status = 'Engine offline'
@@ -310,7 +311,7 @@ class haap_judge(object):
                 db.insert_warning(self.strTimeNow, self.host,
                                   'engine', 2, str_engine_status, 0)
                 self.lstWarningToSend.append([self.strTimeNow, self.host,
-                               self.alias, 2, str_engine_status])
+                                              self.alias, 2, str_engine_status])
 
     def judge_Mirror(self, MirrorStatus_rt, MirrorStatus_db):
         str_engine_mirror = 'Engine mirror not ok'
@@ -319,7 +320,7 @@ class haap_judge(object):
                 db.insert_warning(self.strTimeNow, self.host,
                                   'engine', 2, str_engine_mirror, 0)
                 self.lstWarningToSend.append([self.strTimeNow, self.host,
-                               self.alias, 2, str_engine_mirror])
+                                              self.alias, 2, str_engine_mirror])
 
     def all_judge(self):
         # try:
@@ -333,7 +334,7 @@ class haap_judge(object):
         # finally:
         #     if self.lstWarningToSend:
         #         se.send_warnmail(self.lstWarningToSend)
-        
+
         if self.statusDB:
             if self.judge_AH(self.statusRT[1], self.statusDB[1]):
                 pass
@@ -422,12 +423,13 @@ def haap_info_for_judge(lstInfo):
         for haap in list_haap_alias:
             list_status = lstInfo[haap]["status"]
             new_list_status_judge = list_status[:]
-            list_status_judge = [new_list_status_judge[i] for i in [0, 1, 2, 4, 5]]
+            list_status_judge = [new_list_status_judge[i]
+                                 for i in [0, 1, 2, 4, 5]]
             list_status_judge[2] = lstInfo[haap]['up_sec']
             dicInfo[haap] = list_status_judge
         return dicInfo
 
-    
+
 def get_switch_total_db(list_switch_alias):
     """
     @note: 获取数据库的Total
@@ -473,7 +475,7 @@ def haap_rt_info_to_show():
             info_status.insert(0, engine_alias)
             info_status.append(dicALL[engine_alias]['level'])
             lstHAAPToShow.append(info_status)
-        return  lstHAAPToShow
+        return lstHAAPToShow
 
 
 if __name__ == '__main__':
