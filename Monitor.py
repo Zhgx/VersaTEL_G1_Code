@@ -80,7 +80,6 @@ def monitor_db_4_thread():
         for thread_value in thread:
             try:
                 while thread_value.isAlive():
-                    print('%s'%thread_value)
                     break
             except KeyboardInterrupt:
                 stopping_web(3)
