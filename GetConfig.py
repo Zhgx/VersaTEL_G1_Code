@@ -15,12 +15,10 @@ def read_config_file():
     objCFG.read(name_of_config_file)
     return objCFG
 
-
 def read_sys_config_file():
     objCFG = cp.ConfigParser(allow_no_value=True)
     objCFG.read(name_of_sys_config_file)
     return objCFG
-
 
 class EngineConfig(object):
     """docstring for EngineConfig"""
@@ -105,16 +103,16 @@ class SwitchConfig(object):
 
     def SSH_port(self):
         return self.cfg.getint('SANSwitcheSetting', 'ssh_port')
-    
+
     def username(self):
         return str(self.cfg.get('SANSwitcheSetting', 'username'))
 
     def password(self):
         return str(self.cfg.get('SANSwitcheSetting', 'password'))
-    
+
     def sw_enable_status(self):
         return self.cfg.get('SANSwitcheSetting', 'enable')
-    
+
     def threshold_total(self):
         lstThreshold = []
         # level1 = self.cfg.getint('Threshold', 'SWTotal_increase_Notify')
@@ -163,6 +161,7 @@ class Setting(object):
         self.sys_cfg = read_sys_config_file()
 
     def message_level(self):
+# Get the time interval Settings
         return int(self.sys_cfg.get('MessageLogging', 'msglevel'))
 
     def interval_web_refresh(self):
@@ -176,6 +175,19 @@ class Setting(object):
 
     def interval_warning_check(self):
         return self.cfg.getint('Interval', 'warning_check')
+# Get mail cycle Settings
+
+    def cron_cycle(self):
+        return self.cfg.get('Cycle', 'cycle')
+
+    def cron_day(self):
+        return self.cfg.getint('Cycle', 'day')
+
+    def cron_hour(self):
+        return self.cfg.getint('Cycle', 'hour')
+
+    def cron_minutes(self):
+        return self.cfg.getint('Cycle', 'minutes')
 
     def folder_collection(self):
         return  self.sys_cfg.get('FolderSetting', 'collection')
@@ -206,25 +218,6 @@ class Setting(object):
         for i in self.sys_cfg.items('TraceRegular'):
             oddRegularTrace[i[0]] = i[1]
         return oddRegularTrace
-
-
-class Cycle(object):
-    """docstring for Cycle"""
-
-    def __init__(self):
-        self.cfg = read_config_file()
-
-    def cron_cycle(self):
-        return self.cfg.get('Cycle', 'cycle')
-
-    def cron_day(self):
-        return self.cfg.getint('Cycle', 'day')
-    
-    def cron_hour(self):
-        return self.cfg.getint('Cycle', 'hour')
-    
-    def cron_minutes(self):
-        return self.cfg.getint('Cycle', 'minutes')
 
 
 class General(object):
