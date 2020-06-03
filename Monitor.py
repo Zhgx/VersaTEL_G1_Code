@@ -65,18 +65,18 @@ def monitor_rt_1_thread():
 
 
 def monitor_db_4_thread():
-    target=[start_web,haap_interval_check,sansw_interval_check, \
-        warning_interval_check,Monitoring_heart_check]
-    args=[('db',),(interval_haap_update,),(interval_sansw_update,),\
-        (interval_warning_check,),(cycle_msg_args,)]
-    thread=[]
-    for target,args in zip(target,args):
-        t=Thread(target=target,args=args)
+    target = [start_web, haap_interval_check, sansw_interval_check,
+              warning_interval_check, Monitoring_heart_check]
+    args = [('db',), (interval_haap_update,), (interval_sansw_update,),
+            (interval_warning_check,), (cycle_msg_args,)]
+    thread = []
+    for target, args in zip(target, args):
+        t = Thread(target=target, args=args)
         t.setDaemon(True)
         t.start()
         thread.append(t)
 
-    while True: 
+    while True:
         for thread_value in thread:
             try:
                 while thread_value.isAlive():
@@ -84,7 +84,7 @@ def monitor_db_4_thread():
             except KeyboardInterrupt:
                 stopping_web(3)
                 sys.exit()
-            
+
 
 def start_web(mode):
     '''
