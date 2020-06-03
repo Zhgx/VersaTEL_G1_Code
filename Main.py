@@ -43,7 +43,7 @@ strHelp = '''
 
         pc      : Periodically check
         mnt     : Monitor and show status throgh web server
-        --Version      : View current version
+        v       : View current version
         '''
 
 
@@ -368,7 +368,7 @@ def main():
         else:
             print('rt(realtime) or db(datarase)')
             
-    elif sys.argv[1] == '--Version':
+    elif sys.argv[1] == 'v':
         print("VersaTEL G1",Version)
     else:
         print(strHelp)
