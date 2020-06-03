@@ -20,13 +20,14 @@ strCFGFolder = setting.folder_cfgbackup()
 strTraceFolder = setting.folder_trace()
 
 
+Version = 'v0.0.1'
+
 # <<<Get Config Field>>>
 
 
 # <<<Help String Feild>>>
 strHelp = '''
         Command   Description
-
         ptes    : Port error count display for SAN switch(s)('porterrshow')
         ptcl    : Clear port error counter('statsclear' or 'portstatsclear')
         sws     : Print SAN switch info('switchshow')
@@ -42,6 +43,7 @@ strHelp = '''
 
         pc      : Periodically check
         mnt     : Monitor and show status throgh web server
+        v       : View current version
         '''
 
 
@@ -136,6 +138,10 @@ strMNTHelp = '''
     mnt rt | db
         rt  - Get status real time
         db  - Get status from db(Need MongoDB)
+'''
+strVersionHelp = '''
+    Show current version
+    --Version
 '''
 
 # <<<Help String Field>>>
@@ -361,10 +367,13 @@ def main():
             m.monitor_db_4_thread()
         else:
             print('rt(realtime) or db(datarase)')
-
+            
+    elif sys.argv[1] == 'v':
+        print("VersaTEL G1",Version)
     else:
         print(strHelp)
 
+    
 
 if __name__ == '__main__':
     main()
